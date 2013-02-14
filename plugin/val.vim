@@ -40,7 +40,7 @@ function! g:ValPopulateBufferList(list)
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""
-""""""""""""" System command wrapper """"""""""""""""""
+""""""""""""" System command wrapper """""""""""""""
 """"""""""""""""""""""""""""""""""""""""""""""""""""
 function! g:ValAckCommand(command)
 	call add(s:valCommandHistory, a:command)
@@ -132,6 +132,26 @@ function! g:ValXML(pattern)
 	call g:ValAckCommand('ack -g ' . a:pattern . ' --xml --ignore-dir target')
 endfunction
 command! -nargs=1 ValXML call g:ValXML(<f-args>)
+
+function! g:ValGrepJava(pattern)
+	exec 'vimgrep /' . a:pattern . '/gj ./**/*.java'
+	exec 'cw'
+endfunction
+command! -nargs=1 ValGrepJava call g:ValGrepJava(<f-args>)
+command! -nargs=0 ValGrepJavaType call g:ValGrepJavaType(expand('<cword>'))
+
+function! g:ValGrepGroovy(pattern)
+	exec 'vimgrep /' . a:pattern . '/gj ./**/*.groovy'
+	exec 'cw'
+endfunction
+command! -nargs=1 ValGrepGroovy call g:ValGrepGroovy(<f-args>)
+command! -nargs=0 ValGrepGroovyType call g:ValGrepGroovyType(expand('<cword>'))
+
+function! g:ValGrepXML(pattern)
+	exec 'vimgrep /' . a:pattern . '/gj ./**/*.xml'
+	exec 'cw'
+endfunction
+command! -nargs=1 ValGrepXML call g:ValGrepXML(<f-args>)
 
 function! g:ValBufferResize(size)
 	let s:valDefaultBufferHeight = a:size
