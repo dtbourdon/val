@@ -1,15 +1,17 @@
-" Vim global plugin to provide convienence commands around ack
+" Vim global plugin to provide convienence wrappers around various system commands.
 " Maintainer:	Troy Bourdon
 " License:	This file is placed in the public domain.
 
 let s:valDefaultBufferHeight = 15
+let s:valDefaultNerdTreeWidth = 50
 let s:valBufferName = 'VAL-BUFFER'
 let s:valBufferList = []
 let s:valCommandHistory = []
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-""""""""""""" Buffer management fucntions """"""""""""""""""
+""""""""""""" Buffer management functions """"""""""""""""""
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 function! g:ValPopulateBuffer(results)
 	let l:idx = 0 
 	for l:result in a:results
@@ -42,7 +44,8 @@ endfunction
 """"""""""""""""""""""""""""""""""""""""""""""""""""
 """"""""""""" System command wrapper """""""""""""""
 """"""""""""""""""""""""""""""""""""""""""""""""""""
-function! g:ValAckCommand(command)
+
+function! g:ValSystemCommand(command)
 	call add(s:valCommandHistory, a:command)
 	let l:commandResults = system(a:command)
 
@@ -52,16 +55,13 @@ function! g:ValAckCommand(command)
 	endif
 
 	let l:commandResultsList = split(l:commandResults)
-	if(l:commandResultsList[0] == 'ack:')
-		echo 'ValMessage: ' . l:commandResults 
-	else
-		call g:ValShowBuffer(g:ValPopulateBufferList(l:commandResultsList))
-	endif
+	call g:ValShowBuffer(g:ValPopulateBufferList(l:commandResultsList))
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """"""""""""" Function to open transcript/command history results """"""""""""""""""
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 function! g:ValTranscript()
 	if(len(s:valCommandHistory) > 0)
 		"call g:ValShowBuffer(g:valCommandHistory)
@@ -75,15 +75,17 @@ command! -nargs=0 ValTranscript call g:ValTranscript()
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """"""""""""" Function to open selected result from transcript list """"""""""""""""""
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 function! g:ValTranscriptOpen()
 	let l:command = s:valCommandHistory[line(".") - 1]
-	call g:ValAckCommand(l:command)
+	call g:ValSystemCommand(l:command)
 endfunction
 command! -nargs=0 ValTranscriptOpen call g:ValTranscriptOpen()
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """"""""""""" Function to open last/current command results """"""""""""""""""
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 function! g:ValLast()
 	if(len(s:valBufferList) > 0)
 		call g:ValShowBuffer(s:valBufferList)
@@ -96,6 +98,7 @@ command! -nargs=0 ValLast call g:ValLast()
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """"""""""""" Function to open selected result from results list """"""""""""""""""
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 function! g:ValOpen()
 	let l:file = s:valBufferList[line(".") - 1]
 	q
@@ -103,60 +106,92 @@ function! g:ValOpen()
 endfunction
 command! -nargs=0 ValOpen call g:ValOpen()
 
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-""""""""""""" Convinenece functions around the Ack executable """"""""""""""""""
+""""""""""""" Convinenece functions around the find command """"""""""""""""""""
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 function! g:ValFile(pattern)
-	call g:ValAckCommand('ack -g ' . a:pattern)
+	call g:ValSystemCommand('find -H -type f -name *' . a:pattern . '*')
 endfunction
 command! -nargs=1 ValFile call g:ValFile(<f-args>)
 
+function! g:ValProps(pattern)
+	call g:ValSystemCommand('find -H -type f -name *' . a:pattern . '*.properties')
+endfunction
+command! -nargs=1 ValProps call g:ValProps(<f-args>)
+
 function! g:ValGroovy(pattern)
-	call g:ValAckCommand('ack -g ' . a:pattern . ' --groovy --ignore-dir target')
+	call g:ValSystemCommand('find -H -type f -name *' . a:pattern . '*.groovy')
 endfunction
 command! -nargs=1 ValGroovy call g:ValGroovy(<f-args>)
-command! -nargs=0 ValGroovyType call g:ValGroovy(expand('<cword>'))
+
+function! g:ValGroovyType(pattern)
+	call g:ValSystemCommand('find -H -type f -name ' . a:pattern . '.groovy')
+endfunction
+command! -nargs=0 ValGroovyType call g:ValGroovyType(expand('<cword>'))
 
 function! g:ValHTML(pattern)
-	call g:ValSystem('ack -g ' . a:pattern . ' --html --ignore-dir target')
+	call g:ValSystemCommand('find -H -type f -name *' . a:pattern . '*.html')
 endfunction
 command! -nargs=1 ValHTML call g:ValHTML(<f-args>)
 
 function! g:ValJava(pattern)
-	call g:ValAckCommand('ack -g ' . a:pattern . ' --java --ignore-dir target')
+	call g:ValSystemCommand('find -H -type f -name *' . a:pattern . '*.java')
 endfunction
 command! -nargs=1 ValJava call g:ValJava(<f-args>)
-command! -nargs=0 ValJavaType call g:ValJava(expand('<cword>'))
+
+function! g:ValJavaType(pattern)
+	call g:ValSystemCommand('find -H -type f -name ' . a:pattern . '.java')
+endfunction
+command! -nargs=0 ValJavaType call g:ValJavaType(expand('<cword>'))
 
 function! g:ValXML(pattern)
-	call g:ValAckCommand('ack -g ' . a:pattern . ' --xml --ignore-dir target')
+	call g:ValSystemCommand('find -H -type f -name *' . a:pattern . '*.xml')
 endfunction
 command! -nargs=1 ValXML call g:ValXML(<f-args>)
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+""""""""""""" Convinenece functions around the grep command """"""""""""""""""""
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 function! g:ValGrepJava(pattern)
-	exec 'vimgrep /' . a:pattern . '/gj ./**/*.java'
-	exec 'cw'
+	call g:ValSystemCommand('grep -lr ' . a:pattern . ' --include *.java')
 endfunction
 command! -nargs=1 ValGrepJava call g:ValGrepJava(<f-args>)
-command! -nargs=0 ValGrepJavaType call g:ValGrepJavaType(expand('<cword>'))
+command! -nargs=0 ValGrepJavaType call g:ValGrepJava(expand('<cword>'))
 
 function! g:ValGrepGroovy(pattern)
-	exec 'vimgrep /' . a:pattern . '/gj ./**/*.groovy'
-	exec 'cw'
+	call g:ValSystemCommand('grep -lr ' . a:pattern . ' --include *.groovy')
 endfunction
 command! -nargs=1 ValGrepGroovy call g:ValGrepGroovy(<f-args>)
-command! -nargs=0 ValGrepGroovyType call g:ValGrepGroovyType(expand('<cword>'))
+command! -nargs=0 ValGrepGroovyType call g:ValGrepGroovy(expand('<cword>'))
+
+function! g:ValGrepHTML(pattern)
+	call g:ValSystemCommand('grep -lr ' . a:pattern . ' --include *.groovy')
+endfunction
+command! -nargs=1 ValGrepHTML call g:ValGrepHTML(<f-args>)
+command! -nargs=0 ValGrepHTMLType call g:ValGrepHTML(expand('<cword>'))
 
 function! g:ValGrepXML(pattern)
-	exec 'vimgrep /' . a:pattern . '/gj ./**/*.xml'
-	exec 'cw'
+	call g:ValSystemCommand('grep -lr ' . a:pattern . ' --include *.groovy')
 endfunction
 command! -nargs=1 ValGrepXML call g:ValGrepXML(<f-args>)
+command! -nargs=0 ValGrepXMLType call g:ValGrepXML(expand('<cword>'))
 
 function! g:ValBufferResize(size)
 	let s:valDefaultBufferHeight = a:size
 endfunction
 command! -nargs=1 ValBufferResize call g:ValBufferResize(<f-args>)
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+""""""""""""" Convinenece wrapper around NERDTree """"""""""""""""""""
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+function! g:ValNerdTree()
+	exec 'NERDTree'
+	exec 'vertical res ' . s:valDefaultNerdTreeWidth
+endfunction
+command! -nargs=0 ValNerdTree call g:ValNerdTree()
 
 function! g:ValSystem(command)
 	call add(s:valCommandHistory, a:command)
