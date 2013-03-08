@@ -156,25 +156,25 @@ command! -nargs=1 ValXML call g:ValXML(<f-args>)
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! g:ValGrepJava(pattern)
-	call g:ValSystemCommand('grep -lr ' . a:pattern . ' --include *.java')
+	call g:ValSystemCommand('grep -lrw ' . a:pattern . ' --include *.java')
 endfunction
 command! -nargs=1 ValGrepJava call g:ValGrepJava(<f-args>)
 command! -nargs=0 ValGrepJavaType call g:ValGrepJava(expand('<cword>'))
 
 function! g:ValGrepGroovy(pattern)
-	call g:ValSystemCommand('grep -lr ' . a:pattern . ' --include *.groovy')
+	call g:ValSystemCommand('grep -lrw ' . a:pattern . ' --include *.groovy')
 endfunction
 command! -nargs=1 ValGrepGroovy call g:ValGrepGroovy(<f-args>)
 command! -nargs=0 ValGrepGroovyType call g:ValGrepGroovy(expand('<cword>'))
 
 function! g:ValGrepHTML(pattern)
-	call g:ValSystemCommand('grep -lr ' . a:pattern . ' --include *.groovy')
+	call g:ValSystemCommand('grep -lrw ' . a:pattern . ' --include *.groovy')
 endfunction
 command! -nargs=1 ValGrepHTML call g:ValGrepHTML(<f-args>)
 command! -nargs=0 ValGrepHTMLType call g:ValGrepHTML(expand('<cword>'))
 
 function! g:ValGrepXML(pattern)
-	call g:ValSystemCommand('grep -lr ' . a:pattern . ' --include *.groovy')
+	call g:ValSystemCommand('grep -lrw ' . a:pattern . ' --include *.groovy')
 endfunction
 command! -nargs=1 ValGrepXML call g:ValGrepXML(<f-args>)
 command! -nargs=0 ValGrepXMLType call g:ValGrepXML(expand('<cword>'))
@@ -192,6 +192,13 @@ function! g:ValNerdTree()
 	exec 'vertical res ' . s:valDefaultNerdTreeWidth
 endfunction
 command! -nargs=0 ValNerdTree call g:ValNerdTree()
+
+function! g:ValTabRegion()
+	'<SHIFT-I>'
+	'<TAB>'	
+	'<Esc>'
+endfunction
+command! -nargs=0 ValTabRegion call g:ValTabRegion()
 
 function! g:ValSystem(command)
 	call add(s:valCommandHistory, a:command)
